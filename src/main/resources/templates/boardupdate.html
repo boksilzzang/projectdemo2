@@ -19,7 +19,7 @@
     </header>
     <div class="maincontainer">
       <div class="boardName">포럼게시판</div>
-      <form class="boardwrite" action="/board/forum/update" method="post" name="forumUpdate">
+      <form class="boardwrite" action="/board/forum/update" method="post" name="forumUpdate" enctype="multipart/form-data">
         <!-- 여기부터 눈에 보이지 않는 영역입니다. 카테고리 번호(게시판 선택) 영역 -->
         <input class="postNo" type="hidden" placeholder="게시판 번호" name="postNo" th:value="${forumUpdate.postNo}" />
         <input class="views" type="hidden" placeholder="조회수" name="views" th:value="${forumUpdate.views}" />
@@ -35,6 +35,10 @@
         </div>
         <div>
           <textarea class="inputcontent" type="text" name="content" placeholder="내용" th:text="${forumUpdate.content}"></textarea>
+        </div>
+        <div>
+<!--          th:if="${forumUpdate.fileAttached == 1}"-->
+          <img th:src="@{|/upload/${forumUpdate.storedFileName}|}" height="200">
         </div>
         <button type="submit">수정</button>
       </form>

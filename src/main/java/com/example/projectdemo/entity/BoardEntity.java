@@ -40,11 +40,14 @@ public class BoardEntity {
     @Column
     private String link;
 
-//    @Column
-//    private String originFileName;
-//
-//    @Column
-//    private String storedFileName;
+    @Column
+    private int fileAttached;
+
+    @Column
+    private String originFileName;
+
+    @Column
+    private String storedFileName;
 
     @PrePersist
     public void prePersist() {
@@ -65,11 +68,28 @@ public class BoardEntity {
         boardEntity.setViews(0);
         boardEntity.setPostDate(boardDTO.getPostDate());
 
-//        boardEntity.setOriginFileName(boardDTO.getOriginalFileName());
-//        boardEntity.setStoredFileName(boardDTO.getStoredFileName());
+        boardEntity.setFileAttached(0); //파일이 없다.
 
         return boardEntity;
     }
+
+    public static BoardEntity toSaveFileEntity(BoardDTO boardDTO, String storedFilename) {
+        BoardEntity boardEntity = new BoardEntity();
+
+        boardEntity.setAuthor(boardDTO.getAuthor());
+        boardEntity.setTitle(boardDTO.getTitle());
+        boardEntity.setContent(boardDTO.getContent());
+        boardEntity.setCategory(boardDTO.getCategory());
+        boardEntity.setViews(0);
+        boardEntity.setPostDate(boardDTO.getPostDate());
+
+        boardEntity.setFileAttached(1); //파일이 있다.
+        boardEntity.setOriginFileName(boardDTO.getBoardFile().getOriginalFilename());
+        boardEntity.setStoredFileName(storedFilename);
+
+        return boardEntity;
+    }
+
 
     public static BoardEntity toUpdateEntity(BoardDTO boardDTO) {
         BoardEntity boardEntity = new BoardEntity();
@@ -83,8 +103,23 @@ public class BoardEntity {
         boardEntity.setPostDate(LocalDateTime.now());
         System.out.println(boardDTO.getViews());
 
-//        boardEntity.setOriginFileName(boardDTO.getOriginalFileName());
-//        boardEntity.setStoredFileName(boardDTO.getStoredFileName());
+        return boardEntity;
+    }
+
+    public static BoardEntity toUpdateFileEntity (BoardDTO boardDTO, String storedFilename) {
+        BoardEntity boardEntity = new BoardEntity();
+
+        boardEntity.setPostNo(boardDTO.getPostNo()); // id가 있어야만 update 쿼리 전달함
+        boardEntity.setAuthor(boardDTO.getAuthor());
+        boardEntity.setTitle(boardDTO.getTitle());
+        boardEntity.setContent(boardDTO.getContent());
+        boardEntity.setCategory(boardDTO.getCategory());
+        boardEntity.setViews(boardDTO.getViews());
+        boardEntity.setPostDate(LocalDateTime.now());
+
+        boardEntity.setFileAttached(1); //파일이 있다.
+        boardEntity.setOriginFileName(boardDTO.getBoardFile().getOriginalFilename());
+        boardEntity.setStoredFileName(storedFilename);
 
         return boardEntity;
     }

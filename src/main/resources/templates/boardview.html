@@ -27,6 +27,9 @@
       </div>
       <div th:text="${forum.title}"></div>
       <div th:text="${forum.content}"></div>
+      <div th:if="${forum.fileAttached == 1}">
+        <img th:src="@{|/upload/${forum.storedFileName}|}" height="200">
+      </div>
       <div class="btnbox">
         <button type="button" onclick="listReq()">목록</button>
         <button type="button" th:attr="onclick=|updateForm('${forum.postNo}')|">수정</button>
@@ -44,13 +47,13 @@
             <td th:text="${comment.cmId}"/>
             <td th:text="${comment.cmContent}"></td>
             <td th:text="${#temporals.format(comment.cmDate, 'yyyy-MM-dd HH:mm:ss')}"></td>
-            <td><button onclick="toggleReplyForm('reply-form-[[${comment.cmId}]]')">답글 작성</button></td>
+<!--            <td><button onclick="toggleReplyForm('reply-form-[[${comment.cmId}]]')">답글 작성</button></td>-->
           </tr>
 <!--         대댓글 입력 폼-->
-        <div id="reply-form-1" style="display: none;">
-          <input type="text" id="reply-content-1" placeholder="대댓글 내용">
-          <button onclick="submitReply(1)">등록</button>
-        </div>
+<!--        <div id="reply-form-1" style="display: none;">-->
+<!--          <input type="text" id="reply-content-1" placeholder="대댓글 내용">-->
+<!--          <button onclick="submitReply(1)">등록</button>-->
+<!--        </div>-->
         </table>
       </div>
     </div>

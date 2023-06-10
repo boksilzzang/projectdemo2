@@ -39,18 +39,58 @@ public class BoardService {
         return boardDTO;
     }
 
-    public Long save(BoardDTO boardDTO) {
-        BoardEntity boardEntity = BoardEntity.toSaveEntity(boardDTO);
-        BoardEntity savedEntity = boardRepository.save(boardEntity);
+    public Long save(BoardDTO boardDTO) throws IOException {
+        //파일 첨부 여부에 따라 로직 분리해야함.
+        if(boardDTO.getBoardFile().isEmpty()){ //파일이 없을 때
+            BoardEntity boardEntity = BoardEntity.toSaveEntity(boardDTO);
+            BoardEntity savedEntity = boardRepository.save(boardEntity);
 
-        return savedEntity.getPostNo();
+            return savedEntity.getPostNo();
+        }else { //첨부 파일 있음
+            /*
+                1. DTO에 담긴 파일을 꺼냄
+                2. 파일의 이름을 가져옴
+                3. 서버 저장용 이름을 만듦
+                4. 저장경로에 설정
+                5. 해당 경로에 파일 저장
+                6. board_table에 해당 데이터  save처리
+             */
+            MultipartFile boardFile = boardDTO.getBoardFile(); // 1.
+            String originalFilename = boardFile.getOriginalFilename(); //2. 실제 사용자가 올린 파일 이름
+            String storedFilename = System.currentTimeMillis() + "_" + originalFilename; // 3.
+            String savePath = "C:/projectdemo2_img/"+storedFilename; // 4.
+            boardFile.transferTo(new File(savePath)); // 5.
+
+            BoardEntity boardEntity = BoardEntity.toSaveFileEntity(boardDTO, storedFilename); //6.
+            BoardEntity savedEntity = boardRepository.save(boardEntity);
+
+            return savedEntity.getPostNo();
+        }
     }
 
-    public BoardDTO update(BoardDTO boardDTO) {
-        BoardEntity boardEntity = BoardEntity.toUpdateEntity(boardDTO);
-        boardRepository.save(boardEntity); //update쿼리 수행
+    public BoardDTO update(BoardDTO boardDTO) throws IOException {
+        if(boardDTO.getFileAttached() == 0){
+            BoardEntity boardEntity = BoardEntity.toUpdateEntity(boardDTO);
+            boardRepository.save(boardEntity); //update쿼리 수행
 
-        return findById(boardDTO.getPostNo());
+            return findById(boardDTO.getPostNo());
+
+        }else if(boardDTO.getFileAttached() == 1){
+            MultipartFile boardFile = boardDTO.getBoardFile(); // 1.
+
+            String originalFilename = boardFile.getOriginalFilename(); //2. 실제 사용자가 올린 파일 이름
+            String storedFilename = System.currentTimeMillis() + "_" + originalFilename; // 3.
+            String savePath = "C:/projectdemo2_img/"+storedFilename; // 4.
+            boardFile.transferTo(new File(savePath)); // 5.
+
+            BoardEntity boardEntity = BoardEntity.toUpdateFileEntity(boardDTO, storedFilename); // 6
+            boardRepository.save(boardEntity);
+
+            return findById(boardDTO.getPostNo());
+        } else {
+            return null;
+        }
+
     }
 
     public void delete(Long postNo) {

@@ -54,7 +54,7 @@ public class ForumController {
 
     //글쓰기 Proc
     @PostMapping("/forum/write")
-    public String save(@ModelAttribute BoardDTO boardDTO, Model model) {
+    public String save(@ModelAttribute BoardDTO boardDTO, Model model) throws IOException {
         System.out.println("boardDTO = " + boardDTO);
         Long postNo = boardService.save(boardDTO);
         model.addAttribute("forum", boardDTO);
@@ -72,11 +72,14 @@ public class ForumController {
     }
 
     @PostMapping("/forum/update")
-    public String update(@ModelAttribute BoardDTO boardDTO, Model model){
+    public String update(@ModelAttribute BoardDTO boardDTO, Model model) throws IOException {
         //ModelAttribute로 받아옴
         BoardDTO board = boardService.update(boardDTO);
 
+        List<CommentDTO> commentDTOList = commentService.findAll(board.getPostNo());
+
         model.addAttribute("forum", board);
+        model.addAttribute("commentList",commentDTOList);
 
         return "boardview";
     }

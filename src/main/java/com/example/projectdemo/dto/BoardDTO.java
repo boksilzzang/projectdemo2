@@ -4,6 +4,9 @@ import com.example.projectdemo.entity.BoardEntity;
 import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.time.LocalDateTime;
 
 @Getter
@@ -21,9 +24,11 @@ public class BoardDTO {
     private int views;
     private String link;
 
-//    private MultipartFile boardFile;
-//    private String originalFileName;
-//    private String storedFileName;
+    //파일 첨부 관련
+    private MultipartFile boardFile; //스프링에서 제공하는 interface. 실제 파일을 담아줄 수 있는 역할. save.html -> Controller 파일 담는 용도
+    private String originalFileName; // 원본 파일 이름
+    private String storedFileName; // 서버 저장용 파일 이름
+    private int fileAttached; // 파일 첨부 여부( 첨부1, 미첨부0)
 
     public static BoardDTO toBoardDTO(BoardEntity boardEntity) {
         BoardDTO boardDTO = new BoardDTO();
@@ -37,9 +42,18 @@ public class BoardDTO {
         boardDTO.setViews(boardEntity.getViews());
         boardDTO.setLink(boardEntity.getLink());
 
-//        boardDTO.setOriginalFileName(boardEntity.getOriginFileName());
-//        boardDTO.setStoredFileName(boardEntity.getStoredFileName());
+        System.out.println("boardEntity.getFileAttached(): "+boardEntity.getFileAttached());
+
+        if(boardEntity.getFileAttached() == 0) {
+            boardDTO.setFileAttached(boardEntity.getFileAttached()); // 0
+        } else {
+            boardDTO.setFileAttached(boardEntity.getFileAttached()); // 1
+            //파일 이름을 view에 가져가야함.
+            boardDTO.setOriginalFileName(boardEntity.getOriginFileName());
+            boardDTO.setStoredFileName(boardEntity.getStoredFileName());
+        }
 
         return boardDTO;
     }
+
 }
