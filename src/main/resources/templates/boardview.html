@@ -47,23 +47,22 @@
             <td th:text="${comment.cmId}"/>
             <td th:text="${comment.cmContent}"></td>
             <td th:text="${#temporals.format(comment.cmDate, 'yyyy-MM-dd HH:mm:ss')}"></td>
-<!--            <td><button onclick="toggleReplyForm('reply-form-[[${comment.cmId}]]')">답글 작성</button></td>-->
           </tr>
-<!--         대댓글 입력 폼-->
-<!--        <div id="reply-form-1" style="display: none;">-->
-<!--          <input type="text" id="reply-content-1" placeholder="대댓글 내용">-->
-<!--          <button onclick="submitReply(1)">등록</button>-->
-<!--        </div>-->
         </table>
+        <!-- 페이지 번호 링크(현재 페이지는 숫자만) for(int page=startPage; page<=endPage; page++)-->
+        <span th:each="page: ${#numbers.sequence(startPage, endPage)}">
+          <!-- 현재페이지는 링크 없이 숫자만 -->
+        <span th:if="${page == forumList.number + 1}" th:text="${page}"></span>
+          <!-- 현재페이지 번호가 아닌 다른 페이지번호에는 링크를 보여줌 -->
+        <span th:unless="${page == forumList.number + 1}">
+            <a th:href="@{/board/forum/paging(page=${page})}" th:text="${page}"></a>
+        </span>
+      </span>
       </div>
     </div>
     <footer>Copyright ⓒ 2023 TestPage. All rights reserved.</footer>
   </body>
 <script th:inline="javascript">
-  const toggleReplyForm = (cmId) => {
-    let form = document.getElementById(cmId);
-    form.style.display = form.style.display === "none" ? "block" : "none";
-  }
   const commentWrite = () => {
     const content = document.getElementById("cmContent").value;
     console.log("댓글 내용: ",content);
@@ -100,19 +99,8 @@
     });
   }
 
-  const recommentWrite = () => {
-    const content = document.getElementById("recmContent").value;
-    console.log("대댓글 내용: ", content);
-
-    // 대댓글 작성에 필요한 로직 구현
-
-    // AJAX 요청 등을 통해 서버로 대댓글 작성 데이터 전송
-
-    // 대댓글 작성 후, 적절한 처리 로직 구현
-  }
-
   const listReq = () => {
-    location.href="/board/forum/";
+    location.href="/board/forum/paging";
   }
   const updateForm = (postNo) => {
     location.href="/board/forum/update/"+postNo;

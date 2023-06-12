@@ -18,7 +18,6 @@ public class CommentController {
 
     @PostMapping("/write")
     public ResponseEntity save(@ModelAttribute CommentDTO commentDTO) {
-        System.out.println("commentDTO = " + commentDTO);
         Long saveResult = commentService.save(commentDTO);
         if(saveResult != null) {
             // 작성 성공하면 댓글 목록을 가져와서 리턴
@@ -28,4 +27,7 @@ public class CommentController {
             return new ResponseEntity<>("해당 게시글이 존재하지 않습니다.", HttpStatus.NOT_FOUND);
         }
     }
+
+
+
 }

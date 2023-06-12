@@ -4,6 +4,10 @@ import com.example.projectdemo.dto.BoardDTO;
 import com.example.projectdemo.entity.BoardEntity;
 import com.example.projectdemo.repository.BoardRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -13,6 +17,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -69,26 +74,17 @@ public class BoardService {
     }
 
     public BoardDTO update(BoardDTO boardDTO) throws IOException {
-        if(boardDTO.getFileAttached() == 0){
+
+        if(boardDTO.getFileAttached() == 1){
+            BoardEntity boardEntity = BoardEntity.toUpdateFileEntity(boardDTO); // 6
+            boardRepository.save(boardEntity);
+
+            return findById(boardDTO.getPostNo());
+        }else {
             BoardEntity boardEntity = BoardEntity.toUpdateEntity(boardDTO);
             boardRepository.save(boardEntity); //update쿼리 수행
 
             return findById(boardDTO.getPostNo());
-
-        }else if(boardDTO.getFileAttached() == 1){
-            MultipartFile boardFile = boardDTO.getBoardFile(); // 1.
-
-            String originalFilename = boardFile.getOriginalFilename(); //2. 실제 사용자가 올린 파일 이름
-            String storedFilename = System.currentTimeMillis() + "_" + originalFilename; // 3.
-            String savePath = "C:/projectdemo2_img/"+storedFilename; // 4.
-            boardFile.transferTo(new File(savePath)); // 5.
-
-            BoardEntity boardEntity = BoardEntity.toUpdateFileEntity(boardDTO, storedFilename); // 6
-            boardRepository.save(boardEntity);
-
-            return findById(boardDTO.getPostNo());
-        } else {
-            return null;
         }
 
     }
@@ -99,5 +95,15 @@ public class BoardService {
     @Transactional
     public void updateViews(Long postNo) {
         boardRepository.updateViews(postNo);
+    }
+
+    public Page<BoardDTO> paging(Pageable pageable) {
+        int page = pageable.getPageNumber() -1 ;
+        int pageLimit = 5; // 한 페이지에 보여줄 글 갯수
+        Page<BoardEntity> boardEntities = boardRepository.findAll(PageRequest.of(page, pageLimit, Sort.by(Sort.Direction.DESC,"postNo")));
+
+        Page<BoardDTO> boardDTOS = boardEntities.map(board-> new BoardDTO(board.getPostNo(), board.getAuthor(), board.getTitle(), board.getViews()));
+
+        return boardDTOS;
     }
 }

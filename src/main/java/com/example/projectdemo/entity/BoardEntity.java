@@ -101,12 +101,11 @@ public class BoardEntity {
         boardEntity.setCategory(boardDTO.getCategory());
         boardEntity.setViews(boardDTO.getViews());
         boardEntity.setPostDate(LocalDateTime.now());
-        System.out.println(boardDTO.getViews());
 
         return boardEntity;
     }
 
-    public static BoardEntity toUpdateFileEntity (BoardDTO boardDTO, String storedFilename) {
+    public static BoardEntity toUpdateFileEntity (BoardDTO boardDTO) {
         BoardEntity boardEntity = new BoardEntity();
 
         boardEntity.setPostNo(boardDTO.getPostNo()); // id가 있어야만 update 쿼리 전달함
@@ -118,8 +117,8 @@ public class BoardEntity {
         boardEntity.setPostDate(LocalDateTime.now());
 
         boardEntity.setFileAttached(1); //파일이 있다.
-        boardEntity.setOriginFileName(boardDTO.getBoardFile().getOriginalFilename());
-        boardEntity.setStoredFileName(storedFilename);
+        boardEntity.setOriginFileName(boardDTO.getOriginalFileName());
+        boardEntity.setStoredFileName(boardDTO.getStoredFileName());
 
         return boardEntity;
     }

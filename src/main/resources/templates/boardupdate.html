@@ -37,8 +37,10 @@
           <textarea class="inputcontent" type="text" name="content" placeholder="내용" th:text="${forumUpdate.content}"></textarea>
         </div>
         <div>
-<!--          th:if="${forumUpdate.fileAttached == 1}"-->
-          <img th:src="@{|/upload/${forumUpdate.storedFileName}|}" height="200">
+          <input class="fileAttached" type="hidden" placeholder="파일첨부여부" name="fileAttached" th:value="${forumUpdate.fileAttached}" />
+          <input class="originalFileName" type="hidden" placeholder="실제파일이름" name="originalFileName" th:value="${forumUpdate.originalFileName}" />
+          <input class="storedFileName" type="hidden" placeholder="서버저장용파일이름" name="storedFileName" th:value="${forumUpdate.storedFileName}" />
+          <img th:src="@{|/upload/${forumUpdate.storedFileName}|}" name="storedFileName" height="200">
         </div>
         <button type="submit">수정</button>
       </form>

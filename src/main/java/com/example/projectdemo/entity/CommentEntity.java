@@ -41,6 +41,8 @@ public class CommentEntity {
     @OneToMany(mappedBy = "commentEntity", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<ReCmEntity> reCmEntityList = new ArrayList<>();
 
+
+
     public static CommentEntity toSaveEntity(CommentDTO commentDTO, BoardEntity boardEntity) {
         CommentEntity commentEntity = new CommentEntity();
 
